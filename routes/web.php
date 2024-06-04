@@ -15,7 +15,7 @@ Route::get('/dashboard', [UserController::class,'dashboard'])->name('dashboard')
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::get('/forgot-password', [UserController::class,'forgotPassword'])->name('forgot.password');
 Route::post('/forgot-password', [UserController::class,'forgotPasswordPost'])->name('forgot.password.post');
-Route::get('/reset-password/{token}', [UserController::class,'resetPassword'])->name('reset.password');
 Route::post('/reset-password', [UserController::class,'resetPasswordPost'])->name('reset.password.post');
+Route::get('/reset-password/{token}', [UserController::class,'resetPassword'])->name('reset.password');
 
 // Route::post('/register', [RegisterController::class, ])
