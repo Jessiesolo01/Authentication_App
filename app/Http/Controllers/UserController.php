@@ -24,7 +24,7 @@ class UserController extends Controller
     public function signin(){
         return view("login");
     }
-    public function register(Request $request){
+    public function signupPost(Request $request){
         $incomingFields = $request->validate([
             "name"=>["required","min:2"],
             "email"=> ["required", "email", Rule::unique("users", "email")],
@@ -37,7 +37,7 @@ class UserController extends Controller
 
         return redirect("/dashboard");
     }
-    public function login(Request $request){
+    public function signinPost(Request $request){
         $incomingFields = $request->validate([
             "loginemail"=>"required",
             "loginpassword"=> "required"
@@ -109,41 +109,30 @@ class UserController extends Controller
 
 
     // public function resetPasswordPost(Request $request){
-    //     $request->validate([
-    //         "resetpassword_email"=>["required","email","exists:users,email"],
-    //         // 'resetemail'=>'required|email|exists:users,email'.$this->id,
-    //         // "resetemail"=>$request->resetemail,
-    //         "resetpassword"=>["required","string", "password", "min:4", "confirmed"],
-    //         "resetpassword_confirm"=>["required"],
-    //     ]);  
-    //     // $email = $request->resetemail;
-    //     $updatePassword = DB::table("password_reset")->where([
-    //         "email"=>$request->resetpassword_email,
-    //         "token"=>$request->token,
-    //     ])->first();
-
-    //     if(!$updatePassword){
-    //         return redirect()->to(route("reset.password"))->with("error","Invalid");
-    //     }
-
-    //     User::where("email",$request->resetpassword_email)->update(["password"=>Hash::make($request->resetpassword)]);
-    //     // User::where("email",$request->resetemail)->update(["password"=>bcrypt($request->resetpassword)]);
-    //     DB::table("password_reset")->where(["email"=> $request->resetpassword_email])->delete();
-
-    //     return redirect()->to(route("login"))->with("success","Password reset successful");
-    // }
-
-
+    // public function resetPasswordPost(Request $request, User $user){
+  
+        // $data = $request->validate([
+        //     'token' => 'required',
+        //     'resetpassword_email' => ['required', 'email', 'exists:users,email'],
+        //     'resetpassword' => 'required|min:4|confirmed',
+        // ]);
+        // $request->validate([
+        //     'token' => 'required',
+        //     'resetpassword_email' => 'required|email|exists:users,email',
+        //     'resetpassword' => 'required|min:4|max:200|confirmed',
+        // ]);
 
     public function resetPasswordPost(Request $request){
-  
         $request->validate([
             'token' => 'required',
-            'resetpassword_email' => ['required', 'email', 'exists:users,email'],
-            'resetpassword' => 'required|min:4|confirmed',
+            'resetpassword_email' => 'required|email|exists:users,email',
+            'resetpassword' => 'required|min:4|max:200|confirmed',
+            'resetpassword_confirmation' => 'required'
         ]);
+// };
+        $token = $request->token;
 
-        
+        // dd($request->all());
         $updatePassword = DB::table('password_reset')
             ->where([
                 'email' => $request->resetpassword_email,
@@ -154,17 +143,21 @@ class UserController extends Controller
             // dd($updatePassword);
         
         if (!$updatePassword) {
-            return redirect()->to(route('reset.password'))
+            return redirect()->to(route('reset.password', ['token'=>$token]))
                 ->with('error', 'Invalid token or email');
             // return redirect()->route('reset.password');
                 
         }
+        // #######----INITIAL SOLUTION
+        User::where('email', $request->resetpassword_email)
+            ->update([
+                'password' => bcrypt($request->resetpassword)
+            ]);
+
         // #############NO 1 SOLUTION
         // $updateUser = User::where('email', $request->resetpassword_email)
-        //     ->update([
-        //         'password' => bcrypt($request->resetpassword)
-        //     ]);
         // $updateUser->save();
+        ///
 
         // ###########NO 2 SOLUTION
         // DB::table('users')
@@ -172,13 +165,23 @@ class UserController extends Controller
         //     ->update(['password' => bcrypt($request->resetpassword)]);
         
         // ###########NO 3 SOLUTION
-        User::update(['password'=>bcrypt($request->resetpassword)])::where('email', $request->resetpassword_email)->first();
+        // User::update(['password'=>bcrypt($request->resetpassword)])::where('email', $request->resetpassword_email)->first();
+        
+        // #############NO 4 SOLUTION
+        // $updateUserPassword = User::where('email', $request->resetpassword_email);
+        // $newPassword = bcrypt($request->resetpassword);
+        // $updateUserPassword->password = $request->input($newPassword);
+        // $updateUserPassword->save();
+
+        // #############NO 5 SOLUTION
+        // $user->update([$user->password = bcrypt($data['resetpassword'])]);
+        // 
+        // $user->update([$user['password'] => bcrypt($data['resetpassword'])]);
 
         DB::table('password_reset')
             ->where(['email' => $request->resetpassword_email])
             ->delete();
 
-        
         return redirect()->to(route('signin'))
             ->with('success', 'Password reset successful');
         // return redirect()->route('signin');

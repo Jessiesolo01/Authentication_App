@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Log In</h1>
-    <form action="/login" method="POST">
+    <form action="/signin" method="POST">
         @csrf
         <input type="text" placeholder="email" name="loginemail">
         <input type="password" placeholder="password" name="loginpassword">

@@ -8,7 +8,7 @@
 </head>
 <body>
     <p>We will send a link to your email, use that link to reset password</p>
-    <form action="{{ route("forgot.password.post") }}" method="POST">
+    <form action="{{ route('forgot.password.post') }}" method="POST">
         @csrf
         <input type="email" name="resetemail" placeholder="enter your email">
         <button>Submit</button>

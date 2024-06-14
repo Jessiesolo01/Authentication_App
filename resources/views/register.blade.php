@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Sign Up</h1>
-    <form action="/register" method="POST">
+    <form action="/signup" method="POST">
         @csrf
         <input type="text" placeholder="name" name="name">
         <input type="text" placeholder="email" name="email">
