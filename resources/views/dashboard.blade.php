@@ -7,7 +7,7 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <h1>WELCOME...........</h1>
+    <h1>WELCOME...{{$request->$user->name}}</h1>
     <form action="/logout" method="POST">
         @csrf
         <button>Logout</button>

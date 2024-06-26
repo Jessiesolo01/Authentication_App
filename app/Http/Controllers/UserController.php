@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use id;
 use Carbon\Carbon;
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Validator;
@@ -38,12 +39,14 @@ class UserController extends Controller
         return redirect("/dashboard");
     }
     public function signinPost(Request $request){
+        
         $incomingFields = $request->validate([
             "loginemail"=>"required",
             "loginpassword"=> "required"
         ]);
         if(auth()->attempt(['email'=>$incomingFields['loginemail'], 'password'=>$incomingFields['loginpassword']])){
             $request->session()->regenerate();
+            $user = Auth::user();
             return redirect("/dashboard");
         }
         else{
@@ -54,8 +57,8 @@ class UserController extends Controller
         auth()->logout();
         return redirect("/");
     }
-    public function dashboard(){
-        return view("dashboard");
+    public function dashboard(Request $request, $user){
+        return view("dashboard", compact("user"));
     }
     // public function forgotPassword(){
 
